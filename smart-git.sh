@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# TODO: increase context wrt PR, branch, codebase, etc for commit messages
-# TODO: run gemini in some daemon mode so every commit doesn't take so long
-# TODO: explore validation (tests, builds, etc) in a background agent script 
-# TODO: explore extracting out TODOs from all commits pushed to the branch and adding it to a PR / updating Jira / etc
-
  # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
 # Exit on any error
 set -e
+
+# Check for debug flag
+ECHO_PROMPT=false
+if [[ "$1" == "--echo-prompt" ]]; then
+    ECHO_PROMPT=true
+fi
 
 # Function to handle errors
 error_exit() {
@@ -85,7 +86,7 @@ INSTRUCTIONS:
 3. Focus on WHAT was changed and WHY (if clear from context)
 4. Use present tense (\"Add feature\" not \"Added feature\")
 5. Analyze the actual code changes, not just file names
-6. Note any file addition or deletions explicitly with the file names
+6. Note any file addition / deletions with this format: (add/delete):filename - one per line
 
 Commit message:"
 
@@ -97,6 +98,14 @@ Commit message:"
     
     # Send prompt to Gemini with better error handling
     echo "🤖 Sending prompt to Gemini..."
+    
+    # Echo prompt if debug flag is set
+    if [[ "$ECHO_PROMPT" == true ]]; then
+        echo "🔍 DEBUG: Gemini Prompt:"
+        echo "$GEMINI_PROMPT"
+        echo "🔍 END PROMPT"
+    fi
+    
     COMMIT_MSG=$(echo "$GEMINI_PROMPT" | gemini 2>&1)
     GEMINI_EXIT_CODE=$?
     
