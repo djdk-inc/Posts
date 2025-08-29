@@ -1,18 +1,23 @@
 #!/bin/bash
 # TODO: IF AI IS ENABLED ONCE, DONT ASK FOR IT AGAIN
-# TODO: smart git add, commit, push cycle is broken
-# TODO: DONT USE TMP FILES
-# TODO: If script fails, abort the entire workflow with an error code and message
 
 # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
+# Exit on any error
+set -e
+
+# Function to handle errors
+error_exit() {
+    echo "❌ Error: $1" >&2
+    echo "💡 Workflow aborted" >&2
+    exit 1
+}
+
 echo "🚀 Smart Git Workflow"
 echo "====================="
 
 # Check if we're in a git repository
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
-    echo "❌ Error: Not in a git repository"
-    echo "💡 Please run this script from within a git repository"
-    exit 1
+    error_exit "Not in a git repository. Please run this script from within a git repository."
 fi
 
 # Check if there are changes
@@ -27,7 +32,7 @@ git status --short
 
 # Auto-add all changes
 echo "➕ Adding all changes..."
-git add -A
+git add -A || error_exit "Failed to add changes to git staging area."
 
 # Get context for commit message
 CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
@@ -35,22 +40,31 @@ DIFF_OUTPUT=$(git diff --cached)
 RECENT_COMMITS=$(git log --oneline -3)
 
 
-# Check if we can use Cursor's AI
+# Check if we can use Gemini AI
 USE_AI=false
-if command -v cursor &> /dev/null; then
-    read -p "🤖 Use Cursor's Claude AI to generate commit message? (y/n): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        USE_AI=true
+if command -v gemini &> /dev/null; then
+    # Check if AI preference is already set
+    if [[ -f ".git/smart-git-ai-enabled" ]]; then
+        export USE_AI=true
+        echo "🤖 Using Gemini AI (previously enabled)"
+    else
+        read -p "🤖 Use Gemini AI to generate commit message? (y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            export USE_AI=true
+            # Remember the preference
+            touch .git/smart-git-ai-enabled
+            echo "✅ AI enabled for future commits"
+        fi
     fi
 fi
 
 # Generate commit message
 if [[ "$USE_AI" == true ]]; then
-    echo "🤖 Analyzing changes with Claude AI..."
+    echo "🤖 Analyzing changes with Gemini AI..."
     
-    # Prepare Claude prompt
-    CLAUDE_PROMPT="You are a senior software engineer writing commit messages. Analyze these git changes and write a clear, concise commit message.
+    # Prepare Gemini prompt
+    GEMINI_PROMPT="You are a senior software engineer writing commit messages. Analyze these git changes and write a clear, concise commit message.
 
 CONTEXT:
 - Recent commits: $RECENT_COMMITS
@@ -70,15 +84,15 @@ INSTRUCTIONS:
 
 Commit message:"
 
-    # Use Cursor's AI chat with the prompt
-    echo "🤖 Using Cursor's AI chat..."
+    # Use Gemini AI with the prompt
+    echo "🤖 Using Gemini AI..."
     
     # Ensure we're in the git repository
     cd "$(git rev-parse --show-toplevel)"
     
     # Send prompt to Gemini
-    COMMIT_MSG=$(echo "$CLAUDE_PROMPT" | gemini)
-    echo "COMMIT_MSG: $COMMIT_MSG"N
+    COMMIT_MSG=$(echo "$GEMINI_PROMPT" | gemini) || error_exit "Failed to generate commit message with Gemini AI."
+    echo "COMMIT_MSG: $COMMIT_MSG"
     
     # Fallback if no message provided
     if [[ -z "$COMMIT_MSG" ]]; then
@@ -97,24 +111,19 @@ echo ""
 echo "💡 You can edit this message before committing"
 echo "💡 Or press Enter to use the generated message as-is"
 
-# Create temporary file for commit message
-echo "$COMMIT_MSG" > /tmp/smart_commit_msg.txt
-
 # Ask user if they want to edit or use as-is
 read -p "📝 Edit commit message? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Open editor for user to review/edit commit message
-    if command -v vim &> /dev/null; then
-        vim /tmp/smart_commit_msg.txt
-    elif command -v code &> /dev/null; then
-        code --wait /tmp/smart_commit_msg.txt
+    # Ask user to input the edited message
+    echo "📝 Please enter your edited commit message:"
+    read -r FINAL_MSG
+    if [[ -z "$FINAL_MSG" ]]; then
+        FINAL_MSG="$COMMIT_MSG"
+        echo "✅ Using original commit message: $FINAL_MSG"
     else
-        echo "Please edit the commit message in /tmp/smart_commit_msg.txt"
-        read -p "Press Enter when done..."
+        echo "✅ Using edited commit message: $FINAL_MSG"
     fi
-    # Read the final commit message
-    FINAL_MSG=$(cat /tmp/smart_commit_msg.txt)
 else
     # Use the generated message as-is
     FINAL_MSG="$COMMIT_MSG"
@@ -124,14 +133,14 @@ fi
 
 # Commit with the message
 echo "💾 Committing changes..."
-git commit -m "$FINAL_MSG"
+git commit -m "$FINAL_MSG" || error_exit "Failed to commit changes."
 
 # Ask user if they want to push
 read -p "🚀 Push to remote? (y/n): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "📤 Pushing to remote..."
-    git push
+    git push || error_exit "Failed to push changes to remote repository."
     echo "✅ Done!"
 else
     echo "⏸️  Skipped push. You can push manually later with 'git push'"
