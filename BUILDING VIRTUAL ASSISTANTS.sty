@@ -1,0 +1,21 @@
+BUILDING VIRTUAL ASSISTANTS
+
+Similar to operations
+
+Think of a workflow that mixes humans and agentic systems like a relay race where the baton sometimes has to be checked, polished, or even questioned before the next sprint. The trick is structuring the handoffs clearly. Here’s a way to frame it:
+1. Define decision boundaries.
+Agents are great at crunching, retrieving, drafting, and running deterministic steps. Humans are better at judgment calls, trade-offs, and recognizing fuzzy context. In a workflow doc, explicitly mark which steps are "agent-owned" and which are "human-reviewed." Example: “Agent generates candidate rollout plan → Human validates risk tolerance.”
+2. Insert intervention gates.
+Don’t sprinkle human checks everywhere—that kills flow. Instead, set gates at moments of uncertainty, like when risk is high, ambiguity spikes, or values/tradeoffs must be balanced. Think of them as “review checkpoints” in a flowchart.
+3. Keep context portable.
+When an agent hands off to a human, the baton should carry the full story—summaries, evidence, options, risks—so the human doesn’t waste time reconstructing. When the human hands it back, the agent should get a structured decision (approve/decline, chosen option, comments).
+4. Use escalation paths.
+If the agent hits an exception or confidence threshold drops below a line, it should auto-route to human review. Likewise, humans should be able to bounce things back to the agent (“regenerate with different constraints”).
+5. Track provenance.
+Maintain a log of which steps were agent-executed vs. human-validated. That way you can audit the workflow, and also tune it: maybe you’ll find some “human gates” that never catch anything and can be automated later.
+6. Standardize formats.
+Agents love structure. Define forms, templates, or schemas for both sides so handoffs don’t turn into messy paragraphs. E.g. agents produce a JSON decision packet, humans fill a simple approval form.
+7. Think of it as choreography, not a checklist.
+The goal is flow: agents do fast mechanical dances, humans step in for improvisation, then step back out. Too many interventions and the music stops, too few and you risk a runaway machine.
+The fun part is you can diagram this as a swimlane chart: one lane for agents, one lane for humans, with “gates” as crossing points. That makes it crystal clear who’s holding the baton and when.
+Want me to sketch out a concrete example—say, for a software deployment pipeline where agents handle CI/CD but humans intervene on risky rollouts?
