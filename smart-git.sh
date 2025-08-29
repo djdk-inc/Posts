@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Smart Git Workflow - Auto-add, AI-powered commit messages, and push
+# TODO: increase context wrt PR, branch, codebase, etc for commit messages
+# TODO: run gemini in some daemon mode so every commit doesn't take so long
+
+ # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
 # Exit on any error
 set -e
 
@@ -80,7 +83,7 @@ INSTRUCTIONS:
 3. Focus on WHAT was changed and WHY (if clear from context)
 4. Use present tense (\"Add feature\" not \"Added feature\")
 5. Analyze the actual code changes, not just file names
-6. Note any file addition or deletions explcitly with the file names
+6. Note any file addition or deletions explicitly with the file names
 
 Commit message:"
 
@@ -90,9 +93,23 @@ Commit message:"
     # Ensure we're in the git repository
     cd "$(git rev-parse --show-toplevel)"
     
-    # Send prompt to Gemini
-    COMMIT_MSG=$(echo "$GEMINI_PROMPT" | gemini) || error_exit "Failed to generate commit message with Gemini AI."
-    echo "COMMIT_MSG: $COMMIT_MSG"
+    # Send prompt to Gemini with better error handling
+    echo "🤖 Sending prompt to Gemini..."
+    COMMIT_MSG=$(echo "$GEMINI_PROMPT" | gemini 2>&1)
+    GEMINI_EXIT_CODE=$?
+    
+    if [[ $GEMINI_EXIT_CODE -eq 124 ]]; then
+        echo "⚠️  Gemini timed out after 15 seconds"
+        echo "⚠️  Using fallback commit message."
+        COMMIT_MSG="Update: $CHANGED_FILES"
+    elif [[ $GEMINI_EXIT_CODE -ne 0 ]]; then
+        echo "⚠️  Gemini failed with exit code: $GEMINI_EXIT_CODE"
+        echo "⚠️  Gemini output: $COMMIT_MSG"
+        echo "⚠️  Using fallback commit message."
+        COMMIT_MSG="Update: $CHANGED_FILES"
+    else
+        echo "✅ Gemini response: $COMMIT_MSG"
+    fi
     
     # Fallback if no message provided
     if [[ -z "$COMMIT_MSG" ]]; then
