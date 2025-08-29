@@ -142,12 +142,12 @@ echo "💡 You can edit this message before committing"
 echo "$COMMIT_MSG" > /tmp/smart_commit_msg.txt
 
 # Open editor for user to review/edit commit message
-if command -v code &> /dev/null; then
-    code --wait /tmp/smart_commit_msg.txt
+if command -v vim &> /dev/null; then
+    vim /tmp/smart_commit_msg.txt
 elif command -v nano &> /dev/null; then
     nano /tmp/smart_commit_msg.txt
-elif command -v vim &> /dev/null; then
-    vim /tmp/smart_commit_msg.txt
+elif command -v code &> /dev/null; then
+    code --wait /tmp/smart_commit_msg.txt
 else
     echo "Please edit the commit message in /tmp/smart_commit_msg.txt"
     read -p "Press Enter when done..."
