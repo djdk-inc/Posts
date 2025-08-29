@@ -1,0 +1,13 @@
+# TODO: DEVELOPER ENVIRONMENT INSTALLATION
+
+Terminal
+node
+gemini
+git
+
+Applications
+chatgpt
+claude
+linear
+cursor
+- Setup smart-git.sh in workspace and set up a cursor shortcut CMD+G to run it

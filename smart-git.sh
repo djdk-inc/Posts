@@ -1,5 +1,4 @@
 #!/bin/bash
-# TODO: IF AI IS ENABLED ONCE, DONT ASK FOR IT AGAIN
 
 # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
 # Exit on any error
