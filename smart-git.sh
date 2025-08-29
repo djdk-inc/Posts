@@ -30,6 +30,7 @@ CHANGED_FILES=$(git diff --cached --name-only | tr '\n' ' ')
 DIFF_OUTPUT=$(git diff --cached)
 RECENT_COMMITS=$(git log --oneline -3)
 
+
 # Check if we can use Cursor's AI
 USE_AI=false
 if command -v cursor &> /dev/null; then
