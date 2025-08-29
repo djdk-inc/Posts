@@ -2,6 +2,8 @@
 
 # TODO: increase context wrt PR, branch, codebase, etc for commit messages
 # TODO: run gemini in some daemon mode so every commit doesn't take so long
+# TODO: explore validation (tests, builds, etc) in a background agent script 
+# TODO: explore extracting out TODOs from all commits pushed to the branch and adding it to a PR / updating Jira / etc
 
  # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
 # Exit on any error
