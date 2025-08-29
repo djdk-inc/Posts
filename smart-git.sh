@@ -80,6 +80,7 @@ INSTRUCTIONS:
 3. Focus on WHAT was changed and WHY (if clear from context)
 4. Use present tense (\"Add feature\" not \"Added feature\")
 5. Analyze the actual code changes, not just file names
+6. Note any file addition or deletions explcitly with the file names
 
 Commit message:"
 
