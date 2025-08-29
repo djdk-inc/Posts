@@ -76,7 +76,7 @@ Git diff:
 $DIFF_OUTPUT
 
 INSTRUCTIONS:
-1. Write a commit message that's descriptive but concise (under 72 characters)
+1. Write a commit message that's descriptive and concise 
 2. Use conventional commit format: <type>(<scope>): <description>
 3. Focus on WHAT was changed and WHY (if clear from context)
 4. Use present tense (\"Add feature\" not \"Added feature\")
