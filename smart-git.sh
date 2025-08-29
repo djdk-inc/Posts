@@ -72,10 +72,9 @@ Commit message:"
     cd "$(git rev-parse --show-toplevel)"
     
     # Send prompt to Cursor's AI chat
+    echo "CLAUDE_PROMPT: $CLAUDE_PROMPT"
     COMMIT_MSG=$(cursor --prompt "$CLAUDE_PROMPT")
-    
-    # Clean up the response
-    COMMIT_MSG=$(echo "$COMMIT_MSG" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    echo "COMMIT_MSG: $COMMIT_MSG"N
     
     # Fallback if no message provided
     if [[ -z "$COMMIT_MSG" ]]; then
