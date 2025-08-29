@@ -1,4 +1,8 @@
 #!/bin/bash
+# TODO: IF AI IS ENABLED ONCE, DONT ASK FOR IT AGAIN
+# TODO: smart git add, commit, push cycle is broken
+# TODO: DONT USE TMP FILES
+# TODO: If script fails, abort the entire workflow with an error code and message
 
 # Smart Git Workflow - Auto-add, AI-powered commit messages, and push
 echo "🚀 Smart Git Workflow"
@@ -72,9 +76,8 @@ Commit message:"
     # Ensure we're in the git repository
     cd "$(git rev-parse --show-toplevel)"
     
-    # Send prompt to Cursor's AI chat
-    echo "CLAUDE_PROMPT: $CLAUDE_PROMPT"
-    COMMIT_MSG=$(cursor --prompt "$CLAUDE_PROMPT")
+    # Send prompt to Gemini
+    COMMIT_MSG=$(echo "$CLAUDE_PROMPT" | gemini)
     echo "COMMIT_MSG: $COMMIT_MSG"N
     
     # Fallback if no message provided
