@@ -3,3 +3,25 @@ PLATFORM SLOs
 THIS IS A DOCUMENT
 
 This is a test  
+
+
+In a large-ish organization you're going to need SLOs, heres a couple layers to think about
+
+PRODUCT - ? 
+APPLICATION - ?
+SERVICE - MONOLITH
+AUX - MEMGRAPH
+DATA - NATS
+CORE - KONG, etc
+INFRA - GKE
+
+SLOs are thought of differently at each layer so we're going to approach one layer at a time
+
+What you care about are different at each layer
+
+Interfaces...so
+
+
+
+How do you define availability at a layer?
+How do you define E2E availability?
