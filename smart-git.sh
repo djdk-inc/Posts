@@ -137,24 +137,39 @@ echo "📝 Generated commit message:"
 echo "   $COMMIT_MSG"
 echo ""
 echo "💡 You can edit this message before committing"
+echo "💡 Or press Enter to use the generated message as-is"
 
 # Create temporary file for commit message
 echo "$COMMIT_MSG" > /tmp/smart_commit_msg.txt
 
-# Open editor for user to review/edit commit message
-if command -v vim &> /dev/null; then
-    vim /tmp/smart_commit_msg.txt
-elif command -v nano &> /dev/null; then
-    nano /tmp/smart_commit_msg.txt
-elif command -v code &> /dev/null; then
-    code --wait /tmp/smart_commit_msg.txt
+brew
+npm
+claude
+cursor
+chatgpt Ask user if they want to edit or use as-is
+read -p "📝 Edit commit message? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # Open editor for user to review/edit commit message
+    if command -v vim &> /dev/null; then
+        vim /tmp/smart_commit_msg.txt
+    elif command -v nano &> /dev/null; then
+        nano /tmp/smart_commit_msg.txt
+    elif command -v code &> /dev/null; then
+        code --wait /tmp/smart_commit_msg.txt
+    else
+        echo "Please edit the commit message in /tmp/smart_commit_msg.txt"
+        read -p "Press Enter when done..."
+    fi
+    # Read the final commit message
+    FINAL_MSG=$(cat /tmp/smart_commit_msg.txt)
 else
-    echo "Please edit the commit message in /tmp/smart_commit_msg.txt"
-    read -p "Press Enter when done..."
+    # Use the generated message as-is
+    FINAL_MSG="$COMMIT_MSG"
+    echo "✅ Using generated commit message: $FINAL_MSG"
 fi
 
-# Read the final commit message
-FINAL_MSG=$(cat /tmp/smart_commit_msg.txt)
+
 
 # Commit with the message
 echo "💾 Committing changes..."
